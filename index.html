@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetMoneyFocus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -5px rgba(0,0,0,0.05)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+                        'neon': '0 0 10px rgba(13, 148, 136, 0.5)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'reveal-focus': 'revealFocus 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'blink-cursor': 'blink 1s step-end infinite',
+                        'ken-burns': 'kenBurns 20s ease-in-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(5px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        revealFocus: {
+                            '0%': { opacity: '0', transform: 'translateX(-10px)', textShadow: '0 0 0 transparent' },
+                            '60%': { opacity: '1', transform: 'translateX(0)', textShadow: '0 0 20px rgba(20, 184, 166, 0.8)', color: '#14b8a6' },
+                            '100%': { opacity: '1', transform: 'translateX(0)', textShadow: '0 0 0 transparent', color: 'inherit' },
+                        },
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        },
+                        kenBurns: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.05)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Base Styles & Transitions */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            transition: background-image 0.5s ease-in-out, background-color 0.5s ease, color 0.3s;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        /* Background Classes */
+        body.bg-forest { background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop'); }
+        body.bg-snow { background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2560&auto=format&fit=crop'); }
+        body.bg-garden { background-image: url('https://images.unsplash.com/photo-1578271887552-5ac3a72752bc?q=80&w=2560&auto=format&fit=crop'); }
+        body.bg-city { background-image: url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2560&auto=format&fit=crop'); }
+
+        /* Dark Mode Overlay */
+        html.dark body::before {
+            content: '';
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            z-index: -1;
+            pointer-events: none;
+            transition: background-color 0.5s;
+        }
+        
+        html:not(.dark) body::before {
+            content: '';
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background-color: rgba(255, 255, 255, 0.1); 
+            z-index: -1;
+            pointer-events: none;
+            transition: background-color 0.5s;
+        }
+
+        div:not(.logo-text-instant), button, input, select, textarea { transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s; }
+        
+        .logo-text-instant {
+            transition: color 0s !important;
+        }
+
+        /* Custom Focus Text Styles */
+        html:not(.dark) #navFocusText, html:not(.dark) #mainFocusText {
+            color: #10b981 !important; 
+        }
+        
+        .dark #navFocusText, .dark #mainFocusText {
+            color: #34d399 !important; 
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.7); 
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            animation: confetti-fall 3s ease-in-out forwards;
+            border-radius: 50%;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            transition: width 0.1s linear, background-color 0.3s ease;
+        }
+
+        #timer-section, #success-modal, #cancel-confirmation-modal, #loading-spinner, #login-modal, #payment-processing-modal, #breathing-overlay {
+            display: none;
+        }
+        
+        #motivation-status-container {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.4s ease-in-out, 
+                        margin-bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #motivation-status-container.active {
+            max-height: 250px; 
+            opacity: 1;
+            margin-bottom: 1.5rem; 
+        }
+        
+        .animate-reveal {
+            animation: revealFocus 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .credit-card-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .shake-error {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: #f43f5e !important; 
+        }
+        
+        .bg-selector-container {
+            height: 44px; 
+            width: 44px; 
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+            border-radius: 9999px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        .dark .bg-selector-container {
+             background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .bg-selector-container:hover {
+            width: 184px; 
+        }
+        
+        .bg-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            order: 1; 
+        }
+        .bg-option:hover { transform: scale(1.1); }
+        .bg-option.active { border-color: #0d9488; transform: scale(1.05); order: -1; } 
+        
+        #countdown-container {
+            padding: 0;
+            text-align: center;
+        }
+        
+        .timer-clean {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 200; 
+            font-size: 8rem;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            font-variant-numeric: tabular-nums;
+            color: #111827; 
+            transition: color 0.3s;
+        }
+        
+        .dark .timer-clean {
+            color: #ffffff;
+        }
+        
+        .top-nav-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .dark .top-nav-bar {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none; 
+        }
+
+        .toast-message {
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.1);
+            animation: toast-slide-in 0.3s ease-out forwards;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        @keyframes toast-slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toast-slide-out {
+            to { transform: translateX(20%); opacity: 0; }
+        }
+
+        .parking-checkbox:checked + div {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        
+        @keyframes breathe-scale {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .breathing-text {
+            animation: breathe-scale 3s ease-in-out infinite;
+        }
+        
+        /* Cursor for Typewriter */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink-cursor 1s step-end infinite;
+            color: #0d9488;
+        }
+        
+        /* Nav Audio Pulse */
+        .nav-audio-active {
+            color: #0d9488 !important;
+            animation: nav-pulse 2s infinite;
+        }
+        @keyframes nav-pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(13, 148, 136, 0.5); }
+            100% { opacity: 0.7; }
+        }
+        
+        /* --- ZEN MODE STYLES --- */
+        body.zen-mode #left-column,
+        body.zen-mode #right-column,
+        body.zen-mode #header-content,
+        body.zen-mode .bg-selector-container,
+        body.zen-mode #nav-elements-left, 
+        body.zen-mode #motivationButton, 
+        body.zen-mode #timer-stats-row
+        {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute; 
+            z-index: -1;
+        }
+        
+        body.zen-mode nav {
+            background: transparent;
+            border-bottom: none;
+            backdrop-filter: none;
+        }
+        
+        body.zen-mode #main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; 
+        }
+        
+        body.zen-mode #app-center-content {
+            box-shadow: none;
+            background: transparent;
+            border: none;
+            max-width: 800px;
+            margin: 0 auto; /* Ensure centering */
+        }
+
+        body.zen-mode #button-row {
+            justify-content: center;
+        }
+        body.zen-mode #cancelTimerButton {
+            width: 100%;
+            max-width: 300px;
+            background-color: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        /* Streak Flame Animation */
+        .streak-flame {
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.5));
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 1024px) {
+            .timer-clean {
+                font-size: 5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-forest text-gray-900 dark:text-gray-100 min-h-screen flex flex-col items-center pt-24 transition-all duration-1000">
+
+    <!-- Top Navigation Bar (Fixed) -->
+    <nav id="navbar" class="top-nav-bar fixed top-0 left-0 w-full z-50 px-6 py-3 flex justify-between items-center transition-all duration-500">
+        <!-- Logo Area (Left) -->
+        <div id="nav-elements-left" class="flex items-center gap-6 transition-opacity duration-500">
+             <div class="text-sm font-bold tracking-widest uppercase opacity-70 hidden sm:block brand-font text-gray-900 dark:text-gray-100 logo-text-instant">
+                BetMoney<span id="navFocusText" class="inline-block logo-text-instant">Focus</span>
+            </div>
+            
+            <!-- STREAK COUNTER -->
+            <div id="streakContainer" class="hidden sm:flex items-center gap-2 px-3 py-1 bg-orange-50/50 dark:bg-orange-900/10 rounded-full border border-orange-100 dark:border-orange-900/30" title="Twoja seria dni z rzędu">
+                <i data-lucide="flame" class="w-4 h-4 text-orange-500 streak-flame"></i>
+                <span id="streakCount" class="text-xs font-bold text-orange-600 dark:text-orange-400 font-mono">0 Dni</span>
+            </div>
+        </div>
+
+        <!-- Controls Area (Right) -->
+        <div class="flex items-center gap-4 ml-auto">
+            
+            <!-- WALLET DISPLAY -->
+            <div id="navWalletContainer" class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-white/60 dark:bg-black/60 backdrop-blur-sm rounded-full border border-white/10 shadow-sm animate-fade-in transition-opacity duration-500" title="Twoje Saldo">
+                <i data-lucide="wallet" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                <span id="navWalletBalance" class="text-sm font-mono font-bold text-gray-800 dark:text-gray-200">1000 PLN</span>
+            </div>
+
+            <!-- AUDIO TOGGLE (Cyclic: Brown -> Rain -> Binaural -> Off) -->
+            <button id="navAudioToggle" class="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/60 dark:bg-black/60 backdrop-blur-sm transition-colors focus:outline-none shadow-sm border border-white/10 hover:bg-white dark:hover:bg-zinc-800" title="Audio: Szum -> Deszcz -> Binaural -> Wył.">
+                <i id="audioIcon" data-lucide="headphones" class="w-4 h-4 text-gray-500 dark:text-gray-400 transition-colors"></i>
+            </button>
+
+            <!-- Zen Mode Toggle -->
+            <button id="zenModeToggle" class="hidden relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/60 dark:bg-black/60 backdrop-blur-sm transition-colors focus:outline-none shadow-sm border border-white/10 hover:bg-white dark:hover:bg-zinc-800" title="Tryb Zen">
+                <i data-lucide="maximize-2" class="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
+            </button>
+
+            <!-- 1. Theme Toggle -->
+            <button id="themeToggle" class="relative inline-flex h-8 w-14 items-center rounded-full bg-white/60 dark:bg-black/60 backdrop-blur-sm transition-colors focus:outline-none shadow-sm border border-white/10 transition-opacity duration-500">
+                <span class="sr-only">Tryb Ciemny</span>
+                <span id="themeToggleHandle" class="inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform translate-x-1 dark:translate-x-7 flex items-center justify-center">
+                    <i data-lucide="sun" class="w-3 h-3 text-amber-500 dark:hidden"></i>
+                    <i data-lucide="moon" class="w-3 h-3 text-teal-500 hidden dark:block"></i>
+                </span>
+            </button>
+
+            <!-- 2. Wallpaper Selector -->
+            <div class="bg-selector-container backdrop-blur-md shadow-sm transition-opacity duration-500">
+                <div class="bg-option active" data-bg="bg-forest" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=100');" title="Las"></div>
+                <div class="bg-option" data-bg="bg-snow" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=100');" title="Góry"></div>
+                <div class="bg-option" data-bg="bg-garden" style="background-image: url('https://images.unsplash.com/photo-1578271887552-5ac3a72752bc?q=80&w=100');" title="Ogród Japoński"></div>
+                <div class="bg-option" data-bg="bg-city" style="background-image: url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=100');" title="Miasto"></div>
+            </div>
+
+            <!-- 3. Profile/Login -->
+            <button id="loginBtn" class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full bg-white/60 dark:bg-black/60 backdrop-blur-sm shadow-sm border border-white/10 hover:bg-white dark:hover:bg-zinc-800 transition-all group transition-opacity duration-500">
+                <div class="w-8 h-8 rounded-full overflow-hidden border border-teal-500">
+                    <img id="navAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="w-full h-full object-cover">
+                </div>
+                <span id="loginBtnText" class="text-xs font-bold uppercase tracking-wide group-hover:text-teal-600 dark:group-hover:text-teal-400">Zaloguj</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div id="main-container" class="w-full max-w-[90rem] grid grid-cols-1 lg:grid-cols-12 gap-6 h-full items-start relative z-10 mx-auto px-4 pb-12 transition-all duration-1000">
+
+        <!-- LEFT COLUMN: Distractions -->
+        <div id="left-column" class="lg:col-span-3 w-full order-2 lg:order-1 flex flex-col space-y-4 transition-opacity duration-500">
+             <div class="glass-panel bg-white/80 dark:bg-zinc-900/80 p-6 rounded-[2rem] shadow-soft flex flex-col min-h-[400px]">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full text-indigo-600 dark:text-indigo-400">
+                        <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest brand-font">
+                            Rozproszenia
+                        </h3>
+                        <p class="text-[10px] text-gray-500 dark:text-zinc-600">Oczyść umysł, zapisz na później.</p>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="relative mb-4">
+                    <input type="text" id="parkingInput" placeholder="Co Cię rozprasza? (Enter)" 
+                        class="w-full pl-4 pr-10 py-3 bg-white dark:bg-black/20 border border-gray-200 dark:border-zinc-700/50 rounded-xl text-sm outline-none focus:border-indigo-500 dark:focus:border-indigo-500 transition-all shadow-sm">
+                    <div class="absolute right-3 top-3 text-gray-400">
+                        <i data-lucide="corner-down-left" class="w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <!-- List -->
+                <div id="parkingList" class="flex-grow overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                    <p id="parkingEmptyState" class="text-center text-gray-400 dark:text-zinc-600 text-xs italic mt-10">Brak rozproszeń. Czysty umysł.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDDLE COLUMN: MAIN CONTROLLER -->
+        <div class="lg:col-span-6 w-full order-1 lg:order-2">
+            <div id="app-center-content" class="glass-panel w-full bg-white/80 dark:bg-zinc-900/80 shadow-soft rounded-[2.5rem] p-8 md:p-12 flex flex-col relative overflow-hidden transition-all duration-500 min-h-[600px]">
+                
+                <div id="header-content" class="text-center mb-12 transition-opacity duration-500">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2 break-words text-gray-900 dark:text-gray-100 logo-text-instant">
+                        BetMoney<span id="mainFocusText" class="inline-block logo-text-instant">Focus</span>
+                    </h1>
+                    <p class="text-gray-500 dark:text-zinc-400 text-sm">
+                        Wysoka stawka, głębokie skupienie.
+                    </p>
+                    <!-- Card Status Indicator -->
+                    <div id="cardStatusIndicator" class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/20 text-[11px] font-bold uppercase text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30 cursor-pointer hover:bg-red-200 transition-colors" onclick="openLoginModal()">
+                        <i data-lucide="credit-card" class="w-3 h-3"></i> Brak Karty
+                    </div>
+                </div>
+
+                <!-- 1. SETUP SECTION -->
+                <div id="controls-section" class="flex-grow space-y-8 animate-fade-in">
+                    <!-- ... Inputs ... -->
+                    <div>
+                        <label for="taskName" class="block text-xs font-bold text-gray-400 dark:text-zinc-500 mb-2 uppercase tracking-wide ml-1 brand-font">Cel Zadania</label>
+                        <input type="text" id="taskName" placeholder="Co chcesz osiągnąć? (np. Praca głęboka 45min)" 
+                            class="w-full p-5 bg-white dark:bg-black/30 border border-gray-200 dark:border-zinc-700/50 focus:border-teal-500 dark:focus:border-teal-500 rounded-2xl outline-none transition-all font-medium text-lg placeholder-gray-400 dark:text-white shadow-sm focus:ring-4 focus:ring-teal-500/10">
+                    </div>
+
+                    <div>
+                        <label for="duration" class="block text-xs font-bold text-gray-400 dark:text-zinc-500 mb-2 uppercase tracking-wide ml-1 brand-font">Czas Trwania</label>
+                        <div class="relative">
+                            <select id="duration" class="appearance-none w-full p-5 bg-white dark:bg-black/30 border border-gray-200 dark:border-zinc-700/50 rounded-2xl outline-none focus:border-teal-500 dark:focus:border-teal-500 font-medium text-lg dark:text-white cursor-pointer shadow-sm hover:bg-gray-50 dark:hover:bg-black/40 transition-all focus:ring-4 focus:ring-teal-500/10">
+                                <option value="15">15 Minut (Sprint)</option>
+                                <option value="30">30 Minut (Pomodoro)</option>
+                                <option value="45">45 Minut (Głęboka Praca)</option>
+                                <option value="60">1 Godzina</option>
+                                <option value="90">1.5 Godziny</option>
+                                <option value="120">2 Godziny</option>
+                                <option value="180">3 Godziny (Maraton)</option>
+                                <option value="custom">Własny czas...</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-500">
+                                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <input type="number" id="customDuration" placeholder="Wpisz liczbę minut" class="hidden w-full mt-3 p-5 bg-white dark:bg-black/30 border border-teal-300 dark:border-teal-700 rounded-2xl text-lg font-medium outline-none shadow-inner">
+                    </div>
+
+                    <!-- REWARD & PENALTY SECTION -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="group bg-white dark:bg-black/20 p-1 rounded-2xl border border-gray-200 dark:border-zinc-700/50 hover:border-emerald-400/50 transition-all shadow-sm hover:shadow-md">
+                            <div class="px-3 py-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10 h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="p-1.5 bg-white dark:bg-emerald-900/40 rounded-lg shadow-sm">
+                                        <i data-lucide="target" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                                    </div>
+                                    <label class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide brand-font">Nagroda</label>
+                                </div>
+                                <select id="rewardSelect" class="w-full bg-transparent border-b border-emerald-200 dark:border-emerald-700/50 py-2 text-emerald-800 dark:text-emerald-200 font-semibold focus:outline-none cursor-pointer text-base sm:text-lg">
+                                    <option value="Spacer">Spacer</option>
+                                    <option value="Kawa">Dobra Kawa</option>
+                                    <option value="Relaks">Relaks / Serial</option>
+                                    <option value="Duma">Satysfakcja</option>
+                                    <option value="custom">Własny cel...</option>
+                                </select>
+                                <input type="text" id="customReward" placeholder="Wpisz cel..." class="hidden w-full mt-2 p-1 bg-transparent border-b border-emerald-300 text-sm outline-none">
+                            </div>
+                        </div>
+                        
+                        <div class="group bg-white dark:bg-black/20 p-1 rounded-2xl border border-gray-200 dark:border-zinc-700/50 hover:border-rose-400/50 transition-all shadow-sm hover:shadow-md">
+                             <div class="px-3 py-4 rounded-xl bg-rose-50/50 dark:bg-rose-900/10 h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="p-1.5 bg-white dark:bg-rose-900/40 rounded-lg shadow-sm">
+                                        <i data-lucide="banknote" class="w-4 h-4 text-rose-600 dark:text-rose-400"></i>
+                                    </div>
+                                    <label class="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide brand-font">Stawka</label>
+                                </div>
+                                <select id="penaltySelect" class="w-full bg-transparent border-b border-rose-200 dark:border-rose-700/50 py-2 text-rose-800 dark:text-rose-200 font-semibold focus:outline-none cursor-pointer text-base sm:text-lg">
+                                    <option value="10">10 zł</option>
+                                    <option value="20">20 zł</option>
+                                    <option value="50">50 zł</option>
+                                    <option value="100">100 zł</option>
+                                    <option value="200">200 zł</option>
+                                    <option value="custom">Inne...</option>
+                                </select>
+                                <input type="number" id="customPenalty" placeholder="PLN" class="hidden w-full mt-2 p-1 bg-transparent border-b border-rose-300 text-sm outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MANIFESTO -->
+                    <div class="space-y-4 bg-gray-50/50 dark:bg-zinc-800/30 p-6 rounded-2xl border border-gray-100 dark:border-zinc-700/30">
+                        <div class="mb-5 p-4 bg-white/70 dark:bg-black/20 rounded-xl border border-teal-100 dark:border-teal-900/20 shadow-sm flex flex-col gap-1 text-center backdrop-blur-sm">
+                             <div id="manifestoTask" class="text-base text-gray-800 dark:text-gray-200 font-medium">
+                                Zobowiązuję się do skupienia na: <span class="text-teal-600 dark:text-teal-400 font-bold border-b border-teal-200 dark:border-teal-800">tym zadaniu</span>
+                            </div>
+                            <div id="manifestoTime" class="text-sm text-gray-400 dark:text-zinc-500">
+                                Czas: <span class="font-bold">15 minut</span>
+                            </div>
+                        </div>
+
+                        <!-- Checkboxes (Fixed Hit Area) -->
+                        <label id="intentionContainer" class="flex items-start cursor-pointer hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors p-3 rounded-lg group border border-transparent select-none">
+                            <div class="flex items-center h-5 mt-1">
+                                <input id="intentionCheckbox" type="checkbox" class="w-5 h-5 text-teal-600 rounded border-gray-300 focus:ring-teal-500 dark:bg-zinc-700 dark:border-zinc-600 cursor-pointer">
+                            </div>
+                            <div class="ml-3">
+                                <span class="font-medium text-sm text-gray-600 dark:text-zinc-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                                    Świadomie zobowiązuję się do realizacji tego zadania.
+                                </span>
+                            </div>
+                        </label>
+
+                        <label id="stakesContainer" class="flex items-start cursor-pointer hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors p-3 rounded-lg group border border-transparent select-none">
+                            <div class="flex items-center h-5 mt-1">
+                                <input id="stakesCheckbox" type="checkbox" class="w-5 h-5 text-rose-600 rounded border-gray-300 focus:ring-rose-500 dark:bg-zinc-700 dark:border-zinc-600 cursor-pointer">
+                            </div>
+                            <div class="ml-3">
+                                <span class="font-medium text-sm text-gray-600 dark:text-zinc-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                                    Akceptuję ryzyko utraty pieniędzy w przypadku porażki.
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Start Button -->
+                    <button id="startTimerButton" 
+                            class="w-full py-5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-teal-500/25 active:scale-[0.99] tracking-wide brand-font">
+                        Podpisz i Rozpocznij
+                    </button>
+                </div>
+
+                <!-- 2. ACTIVE TIMER SECTION -->
+                <div id="timer-section" class="flex flex-col items-center w-full flex-grow py-8 animate-in fade-in zoom-in duration-500">
+                    
+                    <h2 id="currentTaskDisplay" class="text-2xl font-medium text-center break-words w-full mb-8 text-gray-700 dark:text-zinc-200 brand-font"></h2>
+                    
+                    <!-- CLEAN COUNTDOWN (Fixed Size) -->
+                    <div id="countdown-container" class="mb-12 w-full text-center relative z-10">
+                        <span id="countdown" class="timer-clean">00:00</span>
+                    </div>
+                    
+                    <!-- SMOOTH COLOR PROGRESS BAR -->
+                    <div class="w-full h-2 bg-gray-100 dark:bg-zinc-800 rounded-full mb-12 overflow-hidden max-w-md shadow-inner">
+                        <div id="progressBar" class="progress-bar-fill h-full bg-teal-500 w-full shadow-neon"></div>
+                    </div>
+
+                    <div id="timer-stats-row" class="flex w-full justify-between text-sm mb-12 px-8 py-5 bg-gray-50/50 dark:bg-black/20 rounded-2xl border border-gray-100 dark:border-zinc-800 max-w-lg transition-opacity duration-500">
+                        <div class="text-left">
+                            <span class="block text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 tracking-wider mb-1">Nagroda</span>
+                            <span id="activeRewardDisplay" class="font-medium text-gray-700 dark:text-gray-300 text-base">--</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[10px] uppercase font-bold text-rose-600 dark:text-rose-400 tracking-wider mb-1">Stawka</span>
+                            <span id="activePenaltyDisplay" class="font-medium text-gray-700 dark:text-gray-300 text-base">--</span>
+                        </div>
+                    </div>
+
+                    <div id="button-row" class="flex gap-4 w-full max-w-lg transition-all duration-500">
+                        <button id="motivationButton" class="flex-1 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-200 font-semibold py-4 px-6 rounded-2xl shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 group">
+                            <i data-lucide="zap" class="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm brand-font">Mental Boost</span>
+                        </button>
+                        
+                        <!-- MAIN CANCEL BUTTON -->
+                        <button id="cancelTimerButton" 
+                                class="flex-1 py-4 px-6 text-rose-500 dark:text-rose-400 font-semibold text-sm bg-rose-50/50 dark:bg-rose-900/10 border border-transparent hover:border-rose-200 dark:hover:border-rose-800 rounded-2xl transition-all brand-font hover:bg-rose-100 dark:hover:bg-rose-900/20">
+                            Poddaję się
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- RIGHT COLUMN: History -->
+        <div id="right-column" class="lg:col-span-3 w-full order-3 flex flex-col relative transition-opacity duration-500">
+            
+            <!-- Mental Boost Panel -->
+            <div id="motivation-status-container" class="w-full">
+                <div id="motivation-status-panel" 
+                     class="glass-panel bg-white/80 dark:bg-zinc-900/80 p-6 rounded-[2rem] shadow-soft overflow-hidden flex flex-col min-h-[160px] justify-center relative mb-0">
+                    
+                    <div class="absolute top-0 left-0 w-1 h-full bg-teal-500/50"></div>
+                    
+                    <div class="flex items-center gap-2 mb-4 absolute top-6 left-6 opacity-50">
+                         <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                         <span class="text-xs font-bold uppercase tracking-widest brand-font">Mental Boost</span>
+                    </div>
+
+                    <div id="ai-output" class="text-gray-600 dark:text-zinc-300 text-sm leading-7 font-light relative z-10 pt-6 min-h-[80px]">
+                        <!-- Content will be injected via JS with Typewriter -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Card -->
+            <div id="history-panel-content" class="glass-panel bg-white/80 dark:bg-zinc-900/80 p-6 rounded-[2rem] shadow-soft flex flex-col flex-grow overflow-hidden min-h-[400px] transition-transform duration-500">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest shrink-0 brand-font">
+                        Ostatnie Sesje
+                    </h3>
+                </div>
+                
+                <!-- History Stats Header -->
+                <div id="historyStats" class="flex gap-3 mb-6 p-3 bg-gray-50 dark:bg-black/20 rounded-xl border border-gray-100 dark:border-zinc-800">
+                     <div class="flex-1 text-center border-r border-gray-200 dark:border-zinc-700">
+                        <p class="text-[10px] text-gray-400 uppercase">Wygrane</p>
+                        <p id="statsWins" class="text-lg font-bold text-emerald-600 dark:text-emerald-400">0</p>
+                     </div>
+                     <div class="flex-1 text-center">
+                        <p class="text-[10px] text-gray-400 uppercase">Stracone</p>
+                        <p id="statsLost" class="text-lg font-bold text-rose-600 dark:text-rose-400">0 zł</p>
+                     </div>
+                </div>
+                
+                <!-- History List -->
+                <div id="history-list" class="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-grow -mr-4 pr-4"></div>
+                <p id="no-history-message" class="text-gray-400 dark:text-zinc-600 text-xs text-center mt-4 hidden italic">Jeszcze nic tu nie ma.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Breathing Overlay -->
+    <div id="breathing-overlay" class="fixed inset-0 z-[60] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl flex items-center justify-center flex-col">
+        <div id="breathing-text" class="text-6xl md:text-8xl font-thin text-teal-600 dark:text-teal-400 brand-font breathing-text text-center">
+            3
+        </div>
+        <p id="breathing-subtext" class="mt-4 text-xl text-gray-500 dark:text-gray-400 font-light uppercase tracking-[0.2em]">
+            Wdech
+        </p>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Login/Profile Modal (with Balance Edit) -->
+    <div id="login-modal" class="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-panel bg-white/95 dark:bg-zinc-900/95 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Profil & Ustawienia</h2>
+                <button id="closeLoginModal" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="text-center mb-6">
+                <div class="relative w-24 h-24 mx-auto mb-3 group">
+                    <div class="w-full h-full rounded-full overflow-hidden border-4 border-gray-100 dark:border-zinc-800 group-hover:border-teal-500 transition-colors">
+                        <img id="profileAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="w-full h-full object-cover">
+                    </div>
+                    <button id="changeAvatarBtn" class="absolute bottom-0 right-0 bg-teal-600 text-white p-1.5 rounded-full shadow-lg hover:bg-teal-700" title="Zmień Avatar">
+                        <i data-lucide="camera" class="w-3 h-3"></i>
+                    </button>
+                </div>
+                
+                <input type="text" id="usernameInput" placeholder="Twój Nick" class="text-center bg-transparent text-xl font-bold border-b border-transparent hover:border-gray-300 focus:border-teal-500 focus:outline-none w-full mb-1" value="Użytkownik">
+                
+                <p id="profileUserId" class="font-mono text-[10px] text-gray-400 mb-2">ID: ...</p>
+                
+                <!-- Wallet Edit In Modal -->
+                <div class="mt-4 p-3 bg-gray-100 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-zinc-700">
+                    <p class="text-xs text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-1">Twoje Saldo (PLN)</p>
+                    <p id="modalWalletBalance" class="text-2xl font-mono font-bold text-gray-800 dark:text-gray-100">1000</p>
+                </div>
+
+                <!-- Top Up Button (Only visible if low balance) -->
+                <button id="topUpBtn" class="hidden w-full mt-2 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition">
+                    <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Zresetuj Finanse
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold uppercase text-gray-500 tracking-wider">Metody Płatności</h3>
+                <div id="card-placeholder" class="hidden p-4 rounded-xl credit-card-bg text-white shadow-lg relative overflow-hidden transition-transform hover:scale-[1.02]">
+                    <div class="absolute top-0 right-0 p-3 opacity-20"><i data-lucide="credit-card" class="w-16 h-16"></i></div>
+                    <p class="text-xs opacity-80 mb-4">MasterCard</p>
+                    <p class="font-mono text-lg tracking-widest mb-4">**** **** **** 4242</p>
+                    <div class="flex justify-between text-xs opacity-90">
+                        <span id="cardHolderName">Jan Kowalski</span>
+                        <span>12/28</span>
+                    </div>
+                </div>
+
+                <button id="addCardBtn" class="w-full py-3 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-800 transition flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Dodaj Kartę
+                </button>
+                <button id="removeCardBtn" class="hidden w-full py-2 text-rose-500 text-xs hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition">
+                    Usuń kartę
+                </button>
+
+                <button id="goToTaskBtn" class="hidden w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all shadow-md mt-4 flex items-center justify-center gap-2">
+                    Przejdź do zadania <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="payment-processing-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-gray-600 border-t-emerald-500 mx-auto mb-6"></div>
+            <h3 class="text-2xl font-bold text-white mb-2">Przetwarzanie Płatności...</h3>
+            <p class="text-gray-400">Nie zamykaj tego okna.</p>
+            <div id="payment-details" class="mt-4 p-4 bg-zinc-900 rounded-xl border border-zinc-800 text-sm text-gray-300 font-mono">
+                Obciążanie karty **** 4242<br>
+                Kwota: <span id="payment-amount" class="text-white font-bold"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-md z-40 flex items-center justify-center p-4">
+        <div class="glass-panel bg-white/95 dark:bg-zinc-900/95 p-8 md:p-12 rounded-3xl shadow-2xl dark:border dark:border-zinc-800 text-center max-w-md w-full relative z-50 animate-in fade-in zoom-in duration-300">
+            <div class="text-7xl mb-6 bounce">🏆</div>
+            <h2 class="text-5xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">GRATULACJE!</h2>
+            <p class="text-lg text-gray-500 dark:text-zinc-400 mb-8 font-medium">Pieniądze Ocalone. Zadanie Wykonane.</p>
+            
+            <div class="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 mb-8 transform rotate-1">
+                <p class="text-xs text-emerald-700 dark:text-emerald-400 uppercase font-bold mb-1 tracking-wide">Twoja Nagroda</p>
+                <p id="earnedReward" class="text-2xl font-bold text-emerald-600 dark:text-emerald-300">...</p>
+            </div>
+            
+            <button onclick="resetApp()" 
+                    class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-2xl hover:scale-105 transition-transform shadow-lg brand-font">
+                Nowy Kontrakt
+            </button>
+        </div>
+    </div>
+    
+    <!-- Cancel Modal with LOCKED BUTTON -->
+    <div id="cancel-confirmation-modal" class="fixed inset-0 bg-white/30 dark:bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-panel bg-white/95 dark:bg-zinc-900/95 p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-t-4 border-rose-500 animate-in fade-in zoom-in duration-300">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Zerwać Kontrakt?</h3>
+            <p id="cancel-modal-text" class="text-gray-600 dark:text-zinc-400 mb-8 leading-relaxed"></p>
+            
+            <div class="flex flex-col space-y-3">
+                <button id="modalDismissCancel" class="w-full py-3 bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors">
+                    Wracam do pracy (Dasz radę!)
+                </button>
+                
+                <!-- CONFIRM BUTTON WITH LOCK AND SVG ANIMATION -->
+                <button id="modalConfirmCancel" class="relative w-full py-3 text-rose-500 font-medium bg-rose-50 dark:bg-rose-900/20 rounded-xl overflow-hidden group cursor-not-allowed opacity-70 transition-all">
+                    <!-- SVG Border Container -->
+                    <svg id="confirmBorderSvg" class="absolute inset-0 w-full h-full pointer-events-none rounded-xl" style="z-index: 0;">
+                        <path id="borderPathRight" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" />
+                        <path id="borderPathLeft" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                    <span class="relative z-10 pointer-events-none">Poddaję się i Płacę</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-spinner" class="fixed inset-0 bg-white/50 dark:bg-black/50 z-[100] flex items-center justify-center backdrop-blur-sm">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 dark:border-zinc-700 border-t-teal-600 dark:border-t-teal-500"></div>
+            <p id="loading-text" class="mt-4 text-gray-800 dark:text-white font-medium font-mono text-sm uppercase tracking-wider bg-white/50 dark:bg-black/50 px-3 py-1 rounded-full">Synchronizacja...</p>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Global Config ---
+        let countdownInterval;
+        let progressFrameRequest; 
+        let timerStartTime;
+        let totalSeconds;
+        let isRunning = false;
+        let currentTask = {};
+        let hasCardAttached = false;
+        let unsubscribeHistory = null;
+        let canCancel = false;
+        let cancelTimeout = null;
+        let userWalletBalance = 1000; 
+        let isZenModeActive = false;
+        let dailyStreak = 0;
+        let lastTaskDate = null;
+        
+        let db, auth, userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        // Audio Context Setup
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Audio System
+        let audioMode = 'OFF'; // OFF, BROWN, RAIN, BINAURAL
+        let noiseSource = null;
+        let noiseGain = null;
+        let binauralOscillators = [];
+        let binauralGain = null;
+        
+        // Audio Buffers
+        let brownNoiseBuffer = null;
+        let pinkNoiseBuffer = null;
+
+        function createBrownNoise() {
+             const bufferSize = audioCtx.sampleRate * 2;
+             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+             const data = buffer.getChannelData(0);
+             let lastOut = 0;
+             for (let i = 0; i < bufferSize; i++) {
+                 const white = Math.random() * 2 - 1;
+                 lastOut = (lastOut + (0.02 * white)) / 1.02;
+                 data[i] = lastOut * 3.5; 
+                 data[i] *= 0.1; 
+             }
+             return buffer;
+        }
+
+        function createPinkNoise() {
+            const bufferSize = audioCtx.sampleRate * 2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                data[i] *= 0.05; // Rain level
+                b6 = white * 0.115926;
+            }
+            return buffer;
+        }
+
+        brownNoiseBuffer = createBrownNoise();
+        pinkNoiseBuffer = createPinkNoise();
+
+        function stopAudio() {
+             // Stop Noise
+             if (noiseSource) {
+                 try {
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                    noiseSource.stop(audioCtx.currentTime + 0.5);
+                 } catch(e){}
+             }
+             noiseSource = null;
+             
+             // Stop Binaural
+             if (binauralOscillators.length > 0) {
+                 try {
+                     binauralGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                     binauralOscillators.forEach(osc => osc.stop(audioCtx.currentTime + 0.5));
+                 } catch(e) {}
+                 binauralOscillators = [];
+             }
+        }
+
+        function startNoise(type) {
+             noiseSource = audioCtx.createBufferSource();
+             noiseSource.buffer = (type === 'BROWN') ? brownNoiseBuffer : pinkNoiseBuffer;
+             noiseSource.loop = true;
+             
+             noiseGain = audioCtx.createGain();
+             noiseGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+             noiseGain.gain.exponentialRampToValueAtTime(1.0, audioCtx.currentTime + 1);
+             
+             noiseSource.connect(noiseGain);
+             noiseGain.connect(audioCtx.destination);
+             noiseSource.start();
+        }
+
+        function startBinaural() {
+            // 40Hz Gamma Focus (400Hz Left, 440Hz Right)
+            const freqBase = 400;
+            const freqBeat = 40;
+            
+            const merger = audioCtx.createChannelMerger(2);
+            binauralGain = audioCtx.createGain();
+            binauralGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            binauralGain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 2); // Lower volume for pure tones
+
+            // Left Ear
+            const oscLeft = audioCtx.createOscillator();
+            oscLeft.type = 'sine';
+            oscLeft.frequency.value = freqBase;
+            const gainLeft = audioCtx.createGain();
+            gainLeft.gain.value = 1;
+            oscLeft.connect(gainLeft);
+            gainLeft.connect(merger, 0, 0); // Connect to left input of merger
+
+            // Right Ear
+            const oscRight = audioCtx.createOscillator();
+            oscRight.type = 'sine';
+            oscRight.frequency.value = freqBase + freqBeat;
+            const gainRight = audioCtx.createGain();
+            gainRight.gain.value = 1;
+            oscRight.connect(gainRight);
+            gainRight.connect(merger, 0, 1); // Connect to right input of merger
+
+            merger.connect(binauralGain);
+            binauralGain.connect(audioCtx.destination);
+            
+            oscLeft.start();
+            oscRight.start();
+            
+            binauralOscillators = [oscLeft, oscRight];
+        }
+
+        function cycleAudio() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            stopAudio();
+
+            if (audioMode === 'OFF') {
+                audioMode = 'BROWN';
+                startNoise('BROWN');
+                navAudioToggle.classList.add('nav-audio-active');
+                document.getElementById('audioIcon').setAttribute('data-lucide', 'headphones');
+                showInfoMessage("🎧 Głęboki Szum (Focus)", "green");
+            } else if (audioMode === 'BROWN') {
+                audioMode = 'RAIN';
+                startNoise('RAIN');
+                navAudioToggle.classList.add('nav-audio-active');
+                document.getElementById('audioIcon').setAttribute('data-lucide', 'cloud-rain');
+                showInfoMessage("🌧️ Deszcz", "green");
+            } else if (audioMode === 'RAIN') {
+                audioMode = 'BINAURAL';
+                startBinaural();
+                navAudioToggle.classList.add('nav-audio-active');
+                document.getElementById('audioIcon').setAttribute('data-lucide', 'activity');
+                showInfoMessage("🧠 40Hz Gamma (Słuchawki!)", "green");
+            } else {
+                audioMode = 'OFF';
+                navAudioToggle.classList.remove('nav-audio-active');
+                document.getElementById('audioIcon').setAttribute('data-lucide', 'headphones');
+                showInfoMessage("Audio Wyłączone", "gray");
+            }
+            lucide.createIcons();
+        }
+        
+        function playTone(freq = 440, type = 'sine', duration = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // --- DOM Elements ---
+        const taskNameInput = document.getElementById('taskName');
+        const durationSelect = document.getElementById('duration');
+        const customDurationInput = document.getElementById('customDuration');
+        const intentionCheckbox = document.getElementById('intentionCheckbox');
+        const stakesCheckbox = document.getElementById('stakesCheckbox');
+        
+        const intentionContainer = document.getElementById('intentionContainer');
+        const stakesContainer = document.getElementById('stakesContainer');
+        
+        const startButton = document.getElementById('startTimerButton');
+        const cancelButton = document.getElementById('cancelTimerButton'); 
+        const modalConfirmCancel = document.getElementById('modalConfirmCancel'); 
+        
+        const confirmBorderSvg = document.getElementById('confirmBorderSvg');
+        const borderPathRight = document.getElementById('borderPathRight');
+        const borderPathLeft = document.getElementById('borderPathLeft');
+        
+        const countdownContainer = document.getElementById('countdown-container');
+        const countdownDisplay = document.getElementById('countdown');
+        const controlsSection = document.getElementById('controls-section');
+        const timerSection = document.getElementById('timer-section');
+        const progressBar = document.getElementById('progressBar');
+        const manifestoTask = document.getElementById('manifestoTask');
+        const manifestoTime = document.getElementById('manifestoTime');
+        const headerContent = document.getElementById('header-content');
+        
+        const motivationButton = document.getElementById('motivationButton');
+        const aiOutput = document.getElementById('ai-output'); 
+        const motivationContainer = document.getElementById('motivation-status-container');
+        const navAudioToggle = document.getElementById('navAudioToggle');
+        const zenModeToggle = document.getElementById('zenModeToggle');
+
+        const rewardSelect = document.getElementById('rewardSelect');
+        const customRewardInput = document.getElementById('customReward');
+        const penaltySelect = document.getElementById('penaltySelect');
+        const customPenaltyInput = document.getElementById('customPenalty');
+        
+        const activeRewardDisplay = document.getElementById('activeRewardDisplay');
+        const activePenaltyDisplay = document.getElementById('activePenaltyDisplay');
+        const successModal = document.getElementById('success-modal');
+        const earnedReward = document.getElementById('earnedReward');
+        const historyList = document.getElementById('history-list');
+        const statsWins = document.getElementById('statsWins');
+        const statsLost = document.getElementById('statsLost');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const loadingText = document.getElementById('loading-text');
+        const noHistoryMessage = document.getElementById('no-history-message');
+        const cancelConfirmationModal = document.getElementById('cancel-confirmation-modal');
+        const cancelModalText = document.getElementById('cancel-modal-text');
+        const modalDismissCancel = document.getElementById('modalDismissCancel');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeToggleHandle = document.getElementById('themeToggleHandle');
+        const navFocusText = document.getElementById('navFocusText');
+        const mainFocusText = document.getElementById('mainFocusText');
+        const toastContainer = document.getElementById('toast-container');
+        const navbar = document.getElementById('navbar');
+        const leftColumn = document.getElementById('left-column');
+        const rightColumn = document.getElementById('right-column');
+        
+        const breathingOverlay = document.getElementById('breathing-overlay');
+        const breathingText = document.getElementById('breathing-text');
+        const breathingSubtext = document.getElementById('breathing-subtext');
+
+        const parkingInput = document.getElementById('parkingInput');
+        const parkingList = document.getElementById('parkingList');
+        const parkingEmptyState = document.getElementById('parkingEmptyState');
+
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('login-modal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const profileUserId = document.getElementById('profileUserId');
+        const cardPlaceholder = document.getElementById('card-placeholder');
+        const addCardBtn = document.getElementById('addCardBtn');
+        const removeCardBtn = document.getElementById('removeCardBtn');
+        const goToTaskBtn = document.getElementById('goToTaskBtn'); 
+        const cardStatusIndicator = document.getElementById('cardStatusIndicator');
+        const paymentProcessingModal = document.getElementById('payment-processing-modal');
+        const paymentAmountDisplay = document.getElementById('payment-amount');
+        
+        // Wallet & Streak DOM
+        const navWalletBalance = document.getElementById('navWalletBalance');
+        const modalWalletBalance = document.getElementById('modalWalletBalance');
+        const topUpBtn = document.getElementById('topUpBtn');
+        const streakContainer = document.getElementById('streakContainer');
+        const streakCount = document.getElementById('streakCount');
+
+        const usernameInput = document.getElementById('usernameInput');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const navAvatar = document.getElementById('navAvatar');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+        const cardHolderName = document.getElementById('cardHolderName');
+
+        lucide.createIcons();
+
+        // --- Persistence Logic (Smart Inputs) ---
+        function loadSmartDefaults() {
+            const savedDuration = localStorage.getItem('lastDuration');
+            const savedPenalty = localStorage.getItem('lastPenalty');
+            
+            if(savedDuration) {
+                 if(['15','30','45','60','90','120','180'].includes(savedDuration)) {
+                     durationSelect.value = savedDuration;
+                 } else {
+                     durationSelect.value = 'custom';
+                     customDurationInput.classList.remove('hidden');
+                     customDurationInput.value = savedDuration;
+                 }
+            }
+            if(savedPenalty) {
+                if(['10','20','50','100','200'].includes(savedPenalty)) {
+                    penaltySelect.value = savedPenalty;
+                } else {
+                    penaltySelect.value = 'custom';
+                    customPenaltyInput.classList.remove('hidden');
+                    customPenaltyInput.value = savedPenalty;
+                }
+            }
+            updateManifesto();
+        }
+
+        // --- Wallet & Streak Logic ---
+        function loadUserData() {
+            const savedWallet = localStorage.getItem('userWalletBalance');
+            if(savedWallet) userWalletBalance = parseInt(savedWallet);
+            
+            const savedStreak = localStorage.getItem('dailyStreak');
+            if(savedStreak) dailyStreak = parseInt(savedStreak);
+            
+            lastTaskDate = localStorage.getItem('lastTaskDate');
+            
+            // Check if streak is broken (more than 1 day passed)
+            if(lastTaskDate) {
+                const last = new Date(lastTaskDate);
+                const now = new Date();
+                const diffTime = Math.abs(now - last);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                if (diffDays > 2) { // Allow skipping 1 day basically, simplistic logic
+                    dailyStreak = 0;
+                }
+            }
+
+            updateWalletDisplay();
+            updateStreakDisplay();
+        }
+
+        function updateWalletDisplay() {
+            navWalletBalance.textContent = `${userWalletBalance} PLN`;
+            modalWalletBalance.textContent = userWalletBalance;
+            localStorage.setItem('userWalletBalance', userWalletBalance);
+            
+            if (userWalletBalance <= 0) navWalletBalance.classList.add('text-rose-500');
+            else navWalletBalance.classList.remove('text-rose-500');
+            
+            if (userWalletBalance < 50) topUpBtn.classList.remove('hidden');
+            else topUpBtn.classList.add('hidden');
+        }
+
+        function updateStreakDisplay() {
+            streakCount.textContent = `${dailyStreak} Dni`;
+            localStorage.setItem('dailyStreak', dailyStreak);
+            if(dailyStreak > 0) streakContainer.classList.remove('hidden'); 
+        }
+        
+        function incrementStreak() {
+            const now = new Date();
+            const todayStr = now.toDateString();
+            
+            if (lastTaskDate) {
+                 const last = new Date(lastTaskDate);
+                 if (last.toDateString() !== todayStr) {
+                     dailyStreak++;
+                 }
+            } else {
+                dailyStreak = 1;
+            }
+            lastTaskDate = now.toISOString();
+            localStorage.setItem('lastTaskDate', lastTaskDate);
+            updateStreakDisplay();
+        }
+        
+        topUpBtn.addEventListener('click', () => {
+             userWalletBalance = 1000;
+             updateWalletDisplay();
+             showInfoMessage("Konto zresetowane. Powodzenia!", "green");
+        });
+
+        loadUserData();
+        loadSmartDefaults();
+
+        // --- Typewriter Effect ---
+        function typeWriter(element, text, speed = 30) {
+            element.innerHTML = '';
+            element.classList.add('typing-cursor');
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    if (i % 3 === 0) playTone(800, 'triangle', 0.02); 
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing-cursor');
+                }
+            }
+            type();
+        }
+
+        const bgOptions = document.querySelectorAll('.bg-option');
+        bgOptions.forEach(opt => {
+            opt.addEventListener('click', () => {
+                bgOptions.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                const bgClass = opt.getAttribute('data-bg');
+                document.body.classList.remove('bg-forest', 'bg-snow', 'bg-garden', 'bg-city');
+                document.body.classList.add(bgClass);
+                localStorage.setItem('preferredBg', bgClass);
+            });
+        });
+
+        const savedBg = localStorage.getItem('preferredBg') || 'bg-forest'; 
+        document.body.classList.remove('bg-forest'); 
+        document.body.classList.add(savedBg);
+        bgOptions.forEach(o => {
+            o.classList.remove('active');
+            if (o.getAttribute('data-bg') === savedBg) o.classList.add('active');
+        });
+
+        rewardSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customRewardInput.classList.remove('hidden');
+                customRewardInput.focus();
+            } else {
+                customRewardInput.classList.add('hidden');
+            }
+        });
+
+        penaltySelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customPenaltyInput.classList.remove('hidden');
+                customPenaltyInput.focus();
+            } else {
+                customPenaltyInput.classList.add('hidden');
+            }
+        });
+
+        durationSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customDurationInput.classList.remove('hidden');
+                customDurationInput.focus();
+            } else {
+                customDurationInput.classList.add('hidden');
+            }
+            updateManifesto();
+        });
+        customDurationInput.addEventListener('input', updateManifesto);
+
+        function getDuration() {
+            if (durationSelect.value === 'custom') {
+                const val = parseInt(customDurationInput.value);
+                return isNaN(val) ? 0 : val;
+            }
+            return parseInt(durationSelect.value);
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            if (isDark) {
+                themeToggleHandle.classList.add('translate-x-7');
+                themeToggleHandle.classList.remove('translate-x-1');
+            } else {
+                themeToggleHandle.classList.remove('translate-x-7');
+                themeToggleHandle.classList.add('translate-x-1');
+            }
+            triggerFocusReveal();
+        }
+
+        function triggerFocusReveal() {
+            [navFocusText, mainFocusText].forEach(el => {
+                el.classList.remove('animate-reveal');
+                void el.offsetWidth;
+                el.classList.add('animate-reveal');
+            });
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggleHandle.classList.add('translate-x-7');
+            themeToggleHandle.classList.remove('translate-x-1');
+        }
+
+        themeToggle.addEventListener('click', toggleDarkMode);
+
+        function openLoginModal() {
+            loginModal.style.display = 'flex';
+        }
+
+        function closeLoginModalFunc() {
+            loginModal.style.display = 'none';
+        }
+
+        loginBtn.addEventListener('click', openLoginModal);
+        closeLoginModal.addEventListener('click', closeLoginModalFunc);
+
+        function loadProfile() {
+            const storedName = localStorage.getItem('userName') || 'Użytkownik';
+            const storedAvatar = localStorage.getItem('userAvatar') || `https://api.dicebear.com/7.x/avataaars/svg?seed=${storedName}`;
+            
+            usernameInput.value = storedName;
+            loginBtnText.textContent = storedName.split(' ')[0];
+            cardHolderName.textContent = storedName;
+            
+            navAvatar.src = storedAvatar;
+            profileAvatar.src = storedAvatar;
+        }
+
+        usernameInput.addEventListener('input', (e) => {
+            const newName = e.target.value;
+            localStorage.setItem('userName', newName);
+            loginBtnText.textContent = newName.split(' ')[0] || 'Zaloguj';
+            cardHolderName.textContent = newName || 'Twoje Imię';
+        });
+
+        changeAvatarBtn.addEventListener('click', () => {
+            const seed = Math.random().toString(36).substring(7);
+            const newAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+            navAvatar.src = newAvatar;
+            profileAvatar.src = newAvatar;
+            localStorage.setItem('userAvatar', newAvatar);
+        });
+
+        if (localStorage.getItem('hasCard') === 'true') {
+            setCardAttached(true);
+        } else {
+            setCardAttached(false);
+        }
+
+        function setCardAttached(attached) {
+            hasCardAttached = attached;
+            if (attached) {
+                localStorage.setItem('hasCard', 'true');
+                cardPlaceholder.classList.remove('hidden');
+                addCardBtn.classList.add('hidden');
+                removeCardBtn.classList.remove('hidden');
+                if (goToTaskBtn) goToTaskBtn.classList.remove('hidden');
+                
+                cardStatusIndicator.className = "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/20 text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/30 cursor-pointer hover:bg-emerald-200 transition-colors";
+                cardStatusIndicator.innerHTML = '<i data-lucide="credit-card" class="w-3 h-3"></i> Karta Aktywna';
+                lucide.createIcons();
+            } else {
+                localStorage.removeItem('hasCard');
+                cardPlaceholder.classList.add('hidden');
+                addCardBtn.classList.remove('hidden');
+                removeCardBtn.classList.add('hidden');
+                if (goToTaskBtn) goToTaskBtn.classList.add('hidden');
+                
+                cardStatusIndicator.className = "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/20 text-[11px] font-bold uppercase text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30 cursor-pointer hover:bg-red-200 transition-colors";
+                cardStatusIndicator.innerHTML = '<i data-lucide="credit-card" class="w-3 h-3"></i> Brak Karty';
+                lucide.createIcons();
+            }
+        }
+
+        addCardBtn.addEventListener('click', () => {
+            const btnText = addCardBtn.innerHTML;
+            addCardBtn.innerHTML = "Weryfikacja...";
+            setTimeout(() => {
+                setCardAttached(true);
+                addCardBtn.innerHTML = btnText;
+                showInfoMessage("Karta dodana pomyślnie!", "green");
+            }, 1000);
+        });
+        
+        goToTaskBtn.addEventListener('click', () => {
+            closeLoginModalFunc();
+            
+            const hasTaskName = taskNameInput.value.trim().length > 0;
+            const hasAgreements = intentionCheckbox.checked && stakesCheckbox.checked;
+            const penaltyVal = penaltySelect.value === 'custom' ? parseInt(customPenaltyInput.value) : parseInt(penaltySelect.value);
+            const hasCardForPenalty = (penaltyVal > 0) ? hasCardAttached : true;
+            
+            if (hasTaskName && hasAgreements && hasCardForPenalty) {
+                initiateTaskStart();
+            } else {
+                if (!hasTaskName) taskNameInput.focus();
+                else if (!hasAgreements) {
+                    intentionContainer.classList.add('bg-teal-50', 'dark:bg-teal-900/20');
+                    setTimeout(() => intentionContainer.classList.remove('bg-teal-50', 'dark:bg-teal-900/20'), 1000);
+                }
+            }
+        });
+
+        removeCardBtn.addEventListener('click', () => {
+             setCardAttached(false);
+        });
+
+        function updateManifesto() {
+            const task = taskNameInput.value.trim() || "tym zadaniu";
+            let mins = "";
+            if (durationSelect.value === 'custom') {
+                const val = parseInt(customDurationInput.value);
+                mins = isNaN(val) ? "..." : `${val} minut`;
+            } else {
+                mins = durationSelect.options[durationSelect.selectedIndex].text;
+            }
+            
+            manifestoTask.innerHTML = `Zobowiązuję się do skupienia na: <span class="text-teal-600 dark:text-teal-400 font-bold border-b border-teal-200 dark:border-teal-800">${task}</span>`;
+            manifestoTime.innerHTML = `Czas: <span class="font-bold">${mins}</span>`;
+        }
+        
+        function updateStartButtonState() {
+            if (intentionCheckbox.checked && stakesCheckbox.checked) {
+                startButton.classList.remove('opacity-90');
+                startButton.classList.add('opacity-100', 'shadow-teal-500/40');
+            } else {
+                startButton.classList.remove('opacity-100', 'shadow-teal-500/40');
+                startButton.classList.add('opacity-90');
+            }
+        }
+
+        taskNameInput.addEventListener('input', updateManifesto);
+        durationSelect.addEventListener('change', updateManifesto);
+        customDurationInput.addEventListener('input', updateManifesto);
+        intentionCheckbox.addEventListener('change', updateStartButtonState);
+        stakesCheckbox.addEventListener('change', updateStartButtonState);
+
+        // --- Motivation Feature (Improved) ---
+        motivationButton.addEventListener('click', () => {
+             if(!isRunning) return;
+             const minutesLeft = Math.floor(totalSeconds / 60);
+             
+             // Dynamic Contextual Quotes
+             const task = currentTask.name || "zadaniu";
+             const CONTEXTUAL_QUOTES = [
+                 `Skupiasz się teraz na: ${task}. To Twój priorytet.`,
+                 `Nie odpuszczaj. ${task} sam się nie zrobi.`,
+                 `Wyobraź sobie satysfakcję po ukończeniu: ${task}.`,
+                 `Jeszcze ${minutesLeft} minut pracy nad: ${task}. Dasz radę!`,
+                 `Twoja inwestycja w ${task} zaraz się zwróci.`,
+                 `Każda sekunda skupienia na ${task} buduje Twój charakter.`
+             ];
+             
+             const quote = CONTEXTUAL_QUOTES[Math.floor(Math.random() * CONTEXTUAL_QUOTES.length)];
+             
+             aiOutput.innerHTML = '';
+             
+             const header = document.createElement('p');
+             header.className = "text-lg font-bold text-teal-600 dark:text-teal-400 mb-2 brand-font";
+             header.innerText = `Focus Status:`;
+             
+             const body = document.createElement('p');
+             body.className = "text-xl font-light text-gray-800 dark:text-white leading-relaxed tracking-tight";
+             
+             aiOutput.appendChild(header);
+             aiOutput.appendChild(body);
+             
+             // Typewriter Effect
+             typeWriter(body, `"${quote}"`);
+        });
+
+        // --- Parking Myśli Logic ---
+        let distractions = JSON.parse(localStorage.getItem('distractions')) || [];
+
+        function renderDistractions() {
+            parkingList.innerHTML = '';
+            if (distractions.length === 0) {
+                parkingEmptyState.style.display = 'block';
+                return;
+            }
+            parkingEmptyState.style.display = 'none';
+
+            distractions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-zinc-700 transition group animate-slide-up';
+                div.innerHTML = `
+                    <input type="checkbox" class="parking-checkbox w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer" ${item.checked ? 'checked' : ''}>
+                    <div class="text-sm text-gray-700 dark:text-gray-300 flex-grow font-medium truncate">${item.text}</div>
+                    <button class="delete-distraction opacity-0 group-hover:opacity-100 text-gray-400 hover:text-rose-500 transition-opacity">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                
+                const checkbox = div.querySelector('.parking-checkbox');
+                checkbox.addEventListener('change', () => toggleDistraction(index));
+                
+                const deleteBtn = div.querySelector('.delete-distraction');
+                deleteBtn.addEventListener('click', () => deleteDistraction(index));
+
+                parkingList.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function addDistraction() {
+            const text = parkingInput.value.trim();
+            if (text) {
+                distractions.unshift({ text: text, checked: false, timestamp: Date.now() });
+                localStorage.setItem('distractions', JSON.stringify(distractions));
+                parkingInput.value = '';
+                renderDistractions();
+            }
+        }
+
+        function toggleDistraction(index) {
+            distractions[index].checked = !distractions[index].checked;
+            localStorage.setItem('distractions', JSON.stringify(distractions));
+            renderDistractions();
+        }
+
+        function deleteDistraction(index) {
+            distractions.splice(index, 1);
+            localStorage.setItem('distractions', JSON.stringify(distractions));
+            renderDistractions();
+        }
+
+        parkingInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addDistraction();
+        });
+
+        renderDistractions();
+
+        async function initializeFirebase() {
+            loadingText.textContent = "Synchronizacja bazy...";
+            loadingSpinner.style.display = 'flex';
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
+                else await signInAnonymously(auth);
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        profileUserId.textContent = `ID: ${userId.substring(0,8)}...`;
+                        loadProfile();
+                        setupHistoryListener(userId);
+                    }
+                    loadingSpinner.style.display = 'none';
+                });
+
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function setupHistoryListener(currentUserId) {
+            if (unsubscribeHistory) {
+                unsubscribeHistory();
+                unsubscribeHistory = null;
+            }
+
+            if (!currentUserId) return;
+
+            const historyRef = collection(db, 'artifacts', appId, 'users', currentUserId, 'task_history');
+            const q = query(historyRef);
+
+            unsubscribeHistory = onSnapshot(q, (snapshot) => {
+                const tasks = [];
+                snapshot.forEach((doc) => {
+                    tasks.push({ id: doc.id, ...doc.data() });
+                });
+                tasks.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                renderHistory(tasks);
+            }, (error) => {
+                console.warn("History access limited:", error.message);
+                noHistoryMessage.textContent = "Historia niedostępna (Brak uprawnień).";
+                noHistoryMessage.style.display = 'block';
+            });
+        }
+        
+        function renderHistory(tasks) {
+            historyList.innerHTML = '';
+            
+            let wins = 0;
+            let totalLostMoney = 0;
+
+            tasks.forEach(t => {
+                if (t.outcome === 'SUCCESS') wins++;
+                if (t.outcome === 'FAILURE') totalLostMoney += (t.penaltyAmount || 0);
+            });
+
+            statsWins.textContent = wins;
+            statsLost.textContent = `${totalLostMoney} zł`;
+
+            if (tasks.length === 0) {
+                noHistoryMessage.style.display = 'block';
+                return;
+            }
+            noHistoryMessage.style.display = 'none';
+
+            tasks.forEach(task => {
+                const date = task.timestamp ? new Date(task.timestamp.seconds * 1000).toLocaleDateString("pl-PL") : '';
+                const isSuccess = task.outcome === 'SUCCESS';
+                const borderColor = isSuccess ? 'border-emerald-500' : 'border-rose-500';
+                const bgColor = isSuccess ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : 'bg-rose-50/50 dark:bg-rose-900/10';
+                
+                const taskElement = document.createElement('div');
+                taskElement.className = `p-4 rounded-xl border-l-2 ${borderColor} ${bgColor} mb-2 hover:bg-opacity-80 transition-colors animate-fade-in`;
+                taskElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="max-w-[70%]">
+                            <p class="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">${task.taskName}</p>
+                            <p class="text-[10px] text-gray-400 dark:text-zinc-500 mt-1 uppercase tracking-wide">${date}</p>
+                        </div>
+                        <div class="text-right">
+                             <span class="text-xs font-bold block ${isSuccess ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                                ${isSuccess ? 'WYGRANA' : 'STRATA'}
+                             </span>
+                             ${!isSuccess ? `<span class="text-[10px] font-mono text-rose-500">-${task.penaltyAmount}zł</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                historyList.appendChild(taskElement);
+            });
+        }
+        
+        async function saveTaskOutcome(outcome, penalty = 0, reward = 'N/A') {
+            if (!userId) {
+                console.error("Cannot save: No User ID");
+                return;
+            }
+            try {
+                const historyRef = collection(db, 'artifacts', appId, 'users', userId, 'task_history');
+                await addDoc(historyRef, {
+                    userId: userId,
+                    taskName: currentTask.name,
+                    durationMinutes: currentTask.duration || 0,
+                    outcome: outcome,
+                    penaltyAmount: penalty,
+                    reward: reward,
+                    timestamp: serverTimestamp() 
+                });
+            } catch (e) {
+                console.error("Save error: ", e);
+                showInfoMessage("Błąd zapisu historii!", "red");
+            }
+        }
+
+        function generateConfetti() {
+            const colors = ['#0d9488', '#10b981', '#f43f5e', '#f59e0b'];
+            // MORE CONFETTI
+            for (let i = 0; i < 300; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                confetti.style.animationDuration = `${2.0 + Math.random() * 1}s`;
+                successModal.appendChild(confetti);
+            }
+            setTimeout(() => {
+                const existingConfetti = successModal.querySelectorAll('.confetti');
+                existingConfetti.forEach(c => c.remove());
+            }, 4000);
+        }
+
+        function initiateTaskStart() {
+            if (isRunning) return;
+
+            const taskName = taskNameInput.value.trim();
+            const durationMinutes = getDuration();
+            
+            if (!intentionCheckbox.checked || !stakesCheckbox.checked) {
+                showInfoMessage("Musisz podpisać kontrakt!", "red");
+                if (!intentionCheckbox.checked) {
+                    intentionContainer.classList.add('shake-error', 'border-rose-300');
+                    setTimeout(() => intentionContainer.classList.remove('shake-error', 'border-rose-300'), 500);
+                }
+                if (!stakesCheckbox.checked) {
+                    stakesContainer.classList.add('shake-error', 'border-rose-300');
+                    setTimeout(() => stakesContainer.classList.remove('shake-error', 'border-rose-300'), 500);
+                }
+                return;
+            }
+            
+            let reward = rewardSelect.value;
+            if(reward === 'custom') {
+                reward = customRewardInput.value.trim();
+                if(!reward) { showInfoMessage("Wpisz nagrodę!", "red"); return; }
+            } else {
+                 reward = rewardSelect.options[rewardSelect.selectedIndex].text;
+            }
+
+            let penaltyAmount = penaltySelect.value;
+            if(penaltyAmount === 'custom') {
+                penaltyAmount = parseInt(customPenaltyInput.value);
+                if(isNaN(penaltyAmount) || penaltyAmount <= 0) { showInfoMessage("Wpisz poprawną kwotę kary!", "red"); return; }
+            } else {
+                penaltyAmount = parseInt(penaltyAmount);
+            }
+
+            if (!taskName) {
+                showInfoMessage("Najpierw wpisz nazwę zadania!", "red");
+                taskNameInput.classList.add('shake-error', 'border-rose-300');
+                setTimeout(() => taskNameInput.classList.remove('shake-error', 'border-rose-300'), 500);
+                return;
+            }
+            
+            // Save Smart Defaults
+            localStorage.setItem('lastDuration', durationSelect.value === 'custom' ? customDurationInput.value : durationSelect.value);
+            localStorage.setItem('lastPenalty', penaltySelect.value === 'custom' ? customPenaltyInput.value : penaltySelect.value);
+            
+            // Check Wallet Balance
+            if (penaltyAmount > userWalletBalance) {
+                showInfoMessage(`Niewystarczające środki w portfelu! Masz ${userWalletBalance} PLN.`, "red");
+                return;
+            }
+
+            if (durationMinutes <= 0 || isNaN(durationMinutes)) {
+                showInfoMessage("Wpisz poprawny czas!", "red");
+                return;
+            }
+            
+            if (penaltyAmount > 0 && !hasCardAttached) {
+                showInfoMessage("Musisz podpiąć kartę do zadania z karą!", "red");
+                openLoginModal();
+                return;
+            }
+
+            currentTask = {
+                name: taskName,
+                reward: reward,
+                penalty: penaltyAmount,
+                duration: durationMinutes
+            };
+
+            startBreathingSequence();
+        }
+
+        function startBreathingSequence() {
+            breathingOverlay.style.display = 'flex';
+            
+            const steps = [
+                { text: "3", sub: "Wdech" },
+                { text: "2", sub: "Wydech" },
+                { text: "1", sub: "Wdech" },
+                { text: "START", sub: "" }
+            ];
+            
+            let stepIndex = 0;
+
+            function runStep() {
+                if (stepIndex >= steps.length) {
+                    breathingOverlay.style.display = 'none';
+                    startTimer(true); 
+                    return;
+                }
+
+                breathingText.textContent = steps[stepIndex].text;
+                breathingSubtext.textContent = steps[stepIndex].sub;
+                
+                // Sound Effect
+                playTone(400 + (stepIndex * 100), 'sine', 0.2);
+                
+                const duration = stepIndex === steps.length - 1 ? 500 : 1500;
+                stepIndex++;
+                setTimeout(runStep, duration);
+            }
+
+            runStep();
+        }
+        
+        // --- ZEN MODE Logic ---
+        function toggleZenMode() {
+            if (isZenModeActive) {
+                document.body.classList.remove('zen-mode');
+                zenModeToggle.innerHTML = '<i data-lucide="maximize-2" class="w-4 h-4 text-gray-500 dark:text-gray-400"></i>';
+                isZenModeActive = false;
+            } else {
+                document.body.classList.add('zen-mode');
+                zenModeToggle.innerHTML = '<i data-lucide="minimize-2" class="w-4 h-4 text-gray-500 dark:text-gray-400"></i>';
+                isZenModeActive = true;
+            }
+            lucide.createIcons();
+        }
+
+        function startTimer(skipValidation = false) {
+            totalSeconds = currentTask.duration * 60; 
+            timerStartTime = Date.now();
+            
+            controlsSection.style.display = 'none';
+            timerSection.style.display = 'flex'; 
+            
+            motivationContainer.classList.add('active');
+            
+            currentTaskDisplay.textContent = currentTask.name;
+            activeRewardDisplay.textContent = currentTask.reward;
+            activePenaltyDisplay.textContent = `${currentTask.penalty} zł`;
+
+            isRunning = true;
+            
+            // Show Zen Toggle
+            zenModeToggle.classList.remove('hidden');
+            
+            tick(); 
+            countdownInterval = setInterval(tick, 1000); 
+            
+            function animateProgress() {
+                if(!isRunning) return;
+                
+                const now = Date.now();
+                const elapsed = (now - timerStartTime) / 1000;
+                let percentageLeft = 100 - ((elapsed / totalSeconds) * 100);
+                if (percentageLeft < 0) percentageLeft = 0;
+                
+                progressBar.style.width = `${percentageLeft}%`;
+                
+                const hue = (100 - percentageLeft) * 1.2; 
+                progressBar.style.backgroundColor = `hsl(${hue}, 80%, 50%)`;
+                
+                progressFrameRequest = requestAnimationFrame(animateProgress);
+            }
+            progressFrameRequest = requestAnimationFrame(animateProgress);
+            
+            aiOutput.innerHTML = `
+                <p class="text-xs text-gray-500 dark:text-zinc-500 mt-2">
+                   Kliknij przycisk <span class="font-bold text-teal-600 dark:text-teal-400">Mental Boost</span>, jeśli potrzebujesz odrobiny motywacji.
+                </p>
+            `;
+            
+            lucide.createIcons();
+        }
+
+        function tick() {
+            const now = Date.now();
+            const elapsed = Math.floor((now - timerStartTime) / 1000);
+            const remaining = totalSeconds - elapsed;
+
+            if (remaining <= 0) {
+                totalSeconds = 0;
+                updateTextDisplay(0);
+                clearInterval(countdownInterval);
+                cancelAnimationFrame(progressFrameRequest);
+                isRunning = false;
+                if(audioMode !== 'OFF') stopAudio(); 
+                audioMode = 'OFF';
+                navAudioToggle.classList.remove('nav-audio-active');
+                if(isZenModeActive) toggleZenMode(); 
+                zenModeToggle.classList.add('hidden'); 
+                taskCompleted();
+            } else {
+                updateTextDisplay(remaining);
+            }
+        }
+
+        function updateTextDisplay(secondsLeft) {
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            const minutesStr = String(minutes).padStart(2, '0');
+            const secondsStr = String(seconds).padStart(2, '0');
+            const timeString = `${minutesStr}:${secondsStr}`;
+            
+            countdownDisplay.textContent = timeString;
+            document.title = `${timeString} - Focus`; // Update Tab Title
+            
+            countdownDisplay.classList.add('timer-clean');
+        }
+
+        async function taskCompleted() {
+            clearInterval(countdownInterval);
+            cancelAnimationFrame(progressFrameRequest);
+            isRunning = false;
+            
+            if(isZenModeActive) toggleZenMode();
+            zenModeToggle.classList.add('hidden');
+            stopAudio();
+            
+            loadingText.textContent = "Zapisywanie wyniku...";
+            loadingSpinner.style.display = 'flex';
+            
+            incrementStreak(); // +1 Streak!
+            await saveTaskOutcome('SUCCESS', 0, currentTask.reward);
+            
+            loadingSpinner.style.display = 'none';
+            timerSection.style.display = 'none';
+            successModal.style.display = 'flex';
+            generateConfetti();
+            
+            // Victory Sound
+            playTone(600, 'sine', 0.1);
+            setTimeout(() => playTone(800, 'sine', 0.1), 150);
+            setTimeout(() => playTone(1200, 'sine', 0.4), 300);
+            
+            earnedReward.textContent = currentTask.reward;
+        }
+
+        function showCancelConfirmation() {
+             if (!isRunning) return;
+            cancelModalText.innerHTML = `Zadeklarowałeś karę w wysokości <b>${currentTask.penalty} zł</b>.<br>Czy na pewno chcesz zrezygnować i zapłacić?`;
+            cancelConfirmationModal.style.display = 'flex';
+        }
+
+        // SVG Border Path Logic
+        function getBorderPathD(width, height, radius, isRightSide) {
+             const startX = width / 2;
+             const startY = 0;
+             const trX = width - radius;
+             const trY = 0;
+             const brX = width;
+             const brY = height - radius;
+             const endX = width / 2;
+             const endY = height;
+             
+             if (isRightSide) {
+                 return `M ${startX} ${startY} L ${trX} ${trY} A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width} ${brY} A ${radius} ${radius} 0 0 1 ${width-radius} ${height} L ${endX} ${endY}`;
+             } else {
+                 const tlX = radius;
+                 const tlY = 0;
+                 const blX = 0;
+                 const blY = height - radius;
+                 return `M ${startX} ${startY} L ${tlX} ${tlY} A ${radius} ${radius} 0 0 0 0 ${radius} L 0 ${blY} A ${radius} ${radius} 0 0 0 ${radius} ${height} L ${endX} ${endY}`;
+             }
+        }
+
+        cancelButton.addEventListener('click', () => {
+            if (!isRunning) return;
+            showCancelConfirmation();
+            canCancel = false;
+            modalConfirmCancel.style.opacity = '0.7';
+            modalConfirmCancel.style.cursor = 'not-allowed';
+            modalConfirmCancel.classList.remove('animate-pulse');
+            borderPathRight.style.strokeDashoffset = '0'; 
+            borderPathRight.style.strokeDasharray = '0';
+            borderPathRight.style.transition = 'none';
+            borderPathLeft.style.strokeDashoffset = '0';
+            borderPathLeft.style.strokeDasharray = '0';
+            borderPathLeft.style.transition = 'none';
+        });
+
+        modalConfirmCancel.addEventListener('mouseenter', () => {
+             const w = modalConfirmCancel.offsetWidth;
+             const h = modalConfirmCancel.offsetHeight;
+             const r = 12; 
+             
+             const dRight = getBorderPathD(w, h, r, true);
+             const dLeft = getBorderPathD(w, h, r, false);
+             
+             borderPathRight.setAttribute('d', dRight);
+             borderPathLeft.setAttribute('d', dLeft);
+             
+             const lenRight = borderPathRight.getTotalLength();
+             const lenLeft = borderPathLeft.getTotalLength();
+             
+             borderPathRight.style.strokeDasharray = lenRight;
+             borderPathRight.style.strokeDashoffset = lenRight;
+             borderPathLeft.style.strokeDasharray = lenLeft;
+             borderPathLeft.style.strokeDashoffset = lenLeft;
+             
+             borderPathRight.getBoundingClientRect();
+             borderPathLeft.getBoundingClientRect();
+             
+             borderPathRight.style.transition = 'stroke-dashoffset 3s linear';
+             borderPathRight.style.strokeDashoffset = '0';
+             
+             borderPathLeft.style.transition = 'stroke-dashoffset 3s linear';
+             borderPathLeft.style.strokeDashoffset = '0';
+             
+             cancelTimeout = setTimeout(() => {
+                 canCancel = true;
+                 modalConfirmCancel.style.opacity = '1';
+                 modalConfirmCancel.style.cursor = 'pointer';
+                 modalConfirmCancel.classList.add('animate-pulse'); 
+             }, 3000);
+        });
+        
+        modalConfirmCancel.addEventListener('mouseleave', () => {
+             clearTimeout(cancelTimeout);
+             canCancel = false;
+             modalConfirmCancel.style.opacity = '0.7';
+             modalConfirmCancel.style.cursor = 'not-allowed';
+             modalConfirmCancel.classList.remove('animate-pulse');
+             borderPathRight.style.transition = 'none';
+             borderPathRight.style.strokeDashoffset = borderPathRight.style.strokeDasharray; 
+             borderPathLeft.style.transition = 'none';
+             borderPathLeft.style.strokeDashoffset = borderPathLeft.style.strokeDasharray; 
+        });
+        
+        modalConfirmCancel.addEventListener('click', () => {
+            if (canCancel) {
+                 confirmCancel();
+            }
+        });
+
+        async function confirmCancel() {
+            clearInterval(countdownInterval);
+            cancelAnimationFrame(progressFrameRequest);
+            isRunning = false;
+            
+            // Clean up zen
+            if(isZenModeActive) toggleZenMode();
+            zenModeToggle.classList.add('hidden');
+            stopAudio();
+            
+            cancelConfirmationModal.style.display = 'none';
+
+            if (currentTask.penalty > 0) {
+                paymentAmountDisplay.textContent = `${currentTask.penalty} PLN`;
+                paymentProcessingModal.style.display = 'flex';
+                
+                setTimeout(async () => {
+                    // DEDUCT FROM WALLET
+                    userWalletBalance -= currentTask.penalty;
+                    dailyStreak = 0; // Lost streak on failure!
+                    updateWalletDisplay();
+                    updateStreakDisplay();
+                    
+                    paymentProcessingModal.style.display = 'none';
+                    await saveTaskOutcome('FAILURE', currentTask.penalty, 'N/A');
+                    showInfoMessage(`❌ Płatność przetworzona. Kara ${currentTask.penalty} zł pobrana.`, "red");
+                    setTimeout(resetApp, 2500);
+                }, 3000);
+            } else {
+                dailyStreak = 0; // Lost streak
+                updateStreakDisplay();
+                await saveTaskOutcome('FAILURE', currentTask.penalty, 'N/A');
+                showInfoMessage(`❌ Porażka.`, "red");
+                setTimeout(resetApp, 2500); 
+            }
+        }
+        
+        function dismissCancel() {
+            cancelConfirmationModal.style.display = 'none';
+        }
+
+        function resetApp() {
+            successModal.style.display = 'none';
+            timerSection.style.display = 'none';
+            cancelConfirmationModal.style.display = 'none';
+            controlsSection.style.display = 'block';
+            motivationContainer.classList.remove('active'); 
+            
+            taskNameInput.value = '';
+            aiOutput.innerHTML = ''; 
+            lucide.createIcons();
+            
+            countdownDisplay.textContent = '00:00';
+            document.title = "BetMoneyFocus";
+            totalSeconds = 0;
+            currentTask = {};
+            
+            intentionCheckbox.checked = false;
+            stakesCheckbox.checked = false;
+            updateStartButtonState(); 
+            
+            progressBar.style.width = '100%';
+        }
+
+        function showInfoMessage(message, color) {
+            const icon = color === 'red' 
+                ? '<i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>' 
+                : '<i data-lucide="check-circle" class="w-5 h-5 text-teal-500"></i>';
+            
+            const textColor = color === 'red' ? 'text-rose-600 dark:text-rose-400' : 'text-teal-600 dark:text-teal-400';
+            const bgColor = "bg-white/80 dark:bg-black/80";
+
+            const toast = document.createElement('div');
+            toast.className = `toast-message flex items-center gap-3 px-6 py-4 rounded-2xl border border-white/20 dark:border-white/5 ${bgColor} shadow-lg min-w-[300px] cursor-pointer`;
+            
+            toast.innerHTML = `
+                ${icon}
+                <span class="font-medium text-sm ${textColor}">${message}</span>
+            `;
+
+            toastContainer.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.style.animation = 'toast-slide-out 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+            
+            toast.addEventListener('click', () => {
+                 toast.style.animation = 'toast-slide-out 0.3s ease-in forwards';
+                 setTimeout(() => toast.remove(), 300);
+            });
+        }
+        
+        // Listeners
+        navAudioToggle.addEventListener('click', cycleAudio);
+        zenModeToggle.addEventListener('click', toggleZenMode);
+        startButton.addEventListener('click', initiateTaskStart); 
+        modalDismissCancel.addEventListener('click', dismissCancel);
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+        
+        window.resetApp = resetApp;
+        window.openLoginModal = openLoginModal;
+        window.loadProfile = loadProfile; 
+    </script>
+</body>
+</html>
