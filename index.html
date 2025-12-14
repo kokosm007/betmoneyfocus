@@ -864,7 +864,14 @@
         
         let db, auth, userId;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const firebaseConfig = {
+  apiKey: "AIzaSyDe1eL-kWYYtSzwsLWxdVbqdsCy9IuTDUo",
+  authDomain: "betmoneyfocus-prod.firebaseapp.com",
+  projectId: "betmoneyfocus-prod",
+  storageBucket: "betmoneyfocus-prod.firebasestorage.app",
+  messagingSenderId: "515092523948",
+  appId: "1:515092523948:web:7f0da3722b11b1d4ed2809"
+};
 
         // Audio Context Setup
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
