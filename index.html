@@ -865,12 +865,12 @@
         let db, auth, userId;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "brak-lokalnie",
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "betmoneyfocus-prod.firebaseapp.com",
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "betmoneyfocus-prod",
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "betmoneyfocus-prod.firebasestorage.app",
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "515092523948",
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:515092523948:web:7f0da3722b11b1d4ed2809"
 };
 
         // Audio Context Setup
